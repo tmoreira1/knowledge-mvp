@@ -39,7 +39,6 @@ encontre qualquer coisa por busca semântica.** Dois microservices sobre um
 ```
 
 ## 2. Decisão de fundação: um único PostgreSQL
-
 A plataforma original usava **MongoDB** (documentos) + **Qdrant** (vetores) +
 **Neo4j** (grafo). O MVP consolida o núcleo num **único PostgreSQL com
 `pgvector`**, que guarda no mesmo banco:
@@ -57,6 +56,30 @@ A plataforma original usava **MongoDB** (documentos) + **Qdrant** (vetores) +
 subir containers arbitrários pode usar um PostgreSQL gerenciado (RDS/Aurora) sem
 introduzir componente de infraestrutura adicional. Dois stores a menos para
 operar, backupear e para a TI aprovar.
+
+## 2.1 Organização por `Space` (não só por projeto)
+
+Nem todo documento pertence a um "projeto". Conhecimento corporativo inclui
+processos, políticas, informação de RH e de times — que se organizam por
+**time/departamento**, não por projeto de software. Por isso o modelo tem um
+agrupador genérico, `space`:
+
+- `space.type` ∈ `{TEAM, DEPARTMENT, PROJECT, PRODUCT, OTHER}` (vocabulário
+  controlado por CHECK, mas em TEXT para ser extensível sem enum). Valor inválido
+  é coagido para `OTHER`.
+- `space.parent_id` permite aninhamento (ex.: `DEPARTMENT > TEAM`), espelhando os
+  *spaces* do Confluence (fonte de ingestão corporativa).
+- `document.space_id` é **opcional** — um documento pode não pertencer a nada, ou
+  pertencer a um space de qualquer tipo. O `project_id` técnico permanece como
+  faceta opcional (a estrutura `Project → Product → Microservice` continua).
+- Migração V2 faz *backfill*: cada `Project` existente vira um `Space` do tipo
+  `PROJECT` (mesmo UUID), e os documentos daquele projeto passam a apontar para o
+  space correspondente. Nada órfão.
+
+Endpoints REST em `/spaces` (CRUD). A busca (`knowledge-search`) aceita um filtro
+opcional `space_id` (ex.: "buscar só no conhecimento de RH"), resolvido via join
+com `document`.
+
 
 ## 3. Microservices
 

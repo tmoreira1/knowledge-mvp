@@ -25,6 +25,9 @@ public class Document {
     @Column(name = "microservice_id")
     private UUID microserviceId;
 
+    @Column(name = "space_id")
+    private UUID spaceId;
+
     @Column(nullable = false)
     private String title;
 

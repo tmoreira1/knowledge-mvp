@@ -59,6 +59,7 @@ async def search_documents(request: SearchRequest) -> SearchResponse:
         project_id=request.project_id,
         domain=request.domain,
         tags=request.tags,
+        space_id=request.space_id,
     )
     return SearchResponse(
         query=request.query,

@@ -1,0 +1,87 @@
+{
+  "_comment": "Documentos de teste com vocabulário DELIBERADAMENTE distinto das queries do golden_set, para medir busca semântica (vocabulary gap). Cada doc usa termos técnicos; as queries usam sinônimos/linguagem de usuário.",
+  "project_name": "Test Bench - Acertividade",
+  "project_description": "Projeto isolado para avaliação de acertividade da busca semântica. Documentos com vocabulário controlado.",
+  "docs": [
+    {
+      "key": "auth",
+      "title": "Autenticação e Controle de Sessão",
+      "slug": "tb-autenticacao",
+      "domain": "backend",
+      "tags": ["auth", "seguranca"],
+      "content": "# Autenticação\n\nO serviço emite credenciais via JWT após validação. A sessão do usuário é mantida por um token de acesso com expiração de 15 minutos e um token de renovação de 7 dias. Suporta OAuth2 e SSO corporativo. As senhas são armazenadas com hash bcrypt."
+    },
+    {
+      "key": "pagamentos",
+      "title": "Processamento de Cobrança",
+      "slug": "tb-pagamentos",
+      "domain": "backend",
+      "tags": ["financeiro"],
+      "content": "# Cobrança\n\nO módulo processa transações via cartão de crédito e débito através do gateway. Gera faturas mensais, aplica retentativa automática em caso de falha e concilia os lançamentos. Suporta estorno e reembolso parcial."
+    },
+    {
+      "key": "backup",
+      "title": "Retenção e Snapshots",
+      "slug": "tb-backup",
+      "domain": "operacao",
+      "tags": ["infra"],
+      "content": "# Retenção de Dados\n\nSnapshots diários são enviados para o armazenamento de objetos com retenção de 30 dias. A restauração é testada mensalmente. Há replicação cross-region para tolerância a falhas catastróficas."
+    },
+    {
+      "key": "notificacoes",
+      "title": "Disparo de Mensagens",
+      "slug": "tb-notificacoes",
+      "domain": "backend",
+      "tags": ["comunicacao"],
+      "content": "# Disparo de Mensagens\n\nCanais suportados: e-mail transacional, push mobile, SMS e webhook. Usa fila para processamento assíncrono. Permite templates com variáveis e agendamento. Registra taxa de entrega e abertura."
+    },
+    {
+      "key": "cache",
+      "title": "Camada de Cache",
+      "slug": "tb-cache",
+      "domain": "backend",
+      "tags": ["performance"],
+      "content": "# Camada de Cache\n\nUtiliza Redis como store em memória. Estratégia de invalidação por TTL e por evento. Reduz a latência de consultas repetidas. Monitora hit rate e evita thundering herd com lock distribuído."
+    },
+    {
+      "key": "observabilidade",
+      "title": "Telemetria e Monitoramento",
+      "slug": "tb-observabilidade",
+      "domain": "operacao",
+      "tags": ["infra"],
+      "content": "# Telemetria\n\nColeta métricas com Prometheus, dashboards no Grafana, traços distribuídos com OpenTelemetry e agregação de logs. Define alertas por SLO e limiares de erro. Rastreia latência p95 e p99 por endpoint."
+    },
+    {
+      "key": "busca",
+      "title": "Indexação e Recuperação",
+      "slug": "tb-busca",
+      "domain": "backend",
+      "tags": ["search"],
+      "content": "# Recuperação de Informação\n\nGera embeddings vetoriais dos documentos e armazena em um índice de similaridade. A consulta é convertida em vetor e comparada por distância de cosseno. Suporta filtros por metadados e re-ranqueamento."
+    },
+    {
+      "key": "deploy",
+      "title": "Entrega Contínua",
+      "slug": "tb-deploy",
+      "domain": "operacao",
+      "tags": ["cicd"],
+      "content": "# Entrega Contínua\n\nPipeline com build, testes automatizados e publicação de imagem de container. Implantação com estratégia canário e rollback automático em caso de regressão. Usa orquestrador para escala horizontal."
+    },
+    {
+      "key": "permissoes",
+      "title": "Autorização e Papéis",
+      "slug": "tb-permissoes",
+      "domain": "backend",
+      "tags": ["seguranca"],
+      "content": "# Autorização\n\nControle de acesso baseado em papéis (RBAC). Cada papel agrupa permissões granulares sobre recursos. Suporta herança de papéis e políticas de negação explícita. Auditoria de concessões e revogações."
+    },
+    {
+      "key": "rate_limit",
+      "title": "Controle de Vazão",
+      "slug": "tb-rate-limit",
+      "domain": "backend",
+      "tags": ["seguranca", "performance"],
+      "content": "# Controle de Vazão\n\nLimita requisições por cliente usando janela deslizante e algoritmo de token bucket. Retorna 429 ao exceder a cota. Protege contra abuso e picos. Configurável por rota e por chave de API."
+    }
+  ]
+}

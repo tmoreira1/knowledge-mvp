@@ -1,0 +1,43 @@
+{
+  "_comment": "Golden set: cada query usa linguagem de USUÁRIO (sinônimos, termos coloquiais) diferente do vocabulário do doc. 'expected' = key do doc esperado em fixtures/docs.json. 'relevance' opcional para nDCG graduado (default 3 = altamente relevante).",
+  "queries": [
+    { "query": "como faço login no sistema", "expected": "auth", "note": "login -> autenticação/JWT" },
+    { "query": "esqueci minha senha, como entrar", "expected": "auth", "note": "senha/entrar -> credenciais" },
+    { "query": "onde valida usuário e token de acesso", "expected": "auth" },
+
+    { "query": "como o cliente paga a assinatura", "expected": "pagamentos", "note": "pagar -> cobrança/transação" },
+    { "query": "processar boleto e cartão no checkout", "expected": "pagamentos" },
+    { "query": "como funciona o reembolso de compra", "expected": "pagamentos" },
+
+    { "query": "como recuperar dados após um desastre", "expected": "backup", "note": "recuperar/desastre -> retenção/snapshot" },
+    { "query": "de quanto em quanto tempo salva cópia de segurança", "expected": "backup" },
+    { "query": "plano de disaster recovery", "expected": "backup" },
+
+    { "query": "como avisar o usuário por email ou celular", "expected": "notificacoes", "note": "avisar -> disparo de mensagens" },
+    { "query": "enviar alerta push para o app", "expected": "notificacoes" },
+    { "query": "mandar SMS de confirmação", "expected": "notificacoes" },
+
+    { "query": "como acelerar consultas lentas", "expected": "cache", "note": "acelerar -> cache/Redis/latência" },
+    { "query": "guardar resultado em memória rápida", "expected": "cache" },
+    { "query": "reduzir tempo de resposta de query repetida", "expected": "cache" },
+
+    { "query": "como vejo se o sistema está no ar e saudável", "expected": "observabilidade", "note": "saúde -> telemetria/monitoramento" },
+    { "query": "gráficos de métricas e alertas de erro", "expected": "observabilidade" },
+    { "query": "rastrear lentidão em um endpoint", "expected": "observabilidade" },
+
+    { "query": "buscar documento por significado", "expected": "busca", "note": "significado -> embedding/similaridade" },
+    { "query": "pesquisa semântica por vetores", "expected": "busca" },
+    { "query": "encontrar conteúdo parecido", "expected": "busca" },
+
+    { "query": "como colocar uma nova versão no ar", "expected": "deploy", "note": "colocar no ar -> entrega contínua/deploy" },
+    { "query": "pipeline de publicação com rollback", "expected": "deploy" },
+    { "query": "subir aplicação em container", "expected": "deploy" },
+
+    { "query": "quem pode acessar cada recurso", "expected": "permissoes", "note": "quem acessa -> autorização/RBAC" },
+    { "query": "definir papéis e perfis de acesso", "expected": "permissoes" },
+
+    { "query": "limitar número de chamadas por cliente", "expected": "rate_limit", "note": "limitar chamadas -> controle de vazão" },
+    { "query": "proteção contra excesso de requisições", "expected": "rate_limit" },
+    { "query": "o que retorna quando estoura a cota da API", "expected": "rate_limit" }
+  ]
+}

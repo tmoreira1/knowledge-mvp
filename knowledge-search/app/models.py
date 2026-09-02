@@ -9,6 +9,7 @@ class SearchRequest(BaseModel):
     project_id: str | None = None
     domain: str | None = None
     tags: list[str] | None = None
+    space_id: str | None = None
 
 
 class SearchResult(BaseModel):

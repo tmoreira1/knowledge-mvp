@@ -12,7 +12,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- =====================================================================
 -- Hierarquia: Project → Product → Microservice
 -- =====================================================================
-CREATE TABLE project (
+CREATE TABLE IF NOT EXISTS project (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name        TEXT NOT NULL,
     description TEXT,
@@ -22,7 +22,7 @@ CREATE TABLE project (
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE product (
+CREATE TABLE IF NOT EXISTS product (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_id  UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
     name        TEXT NOT NULL,
@@ -32,9 +32,9 @@ CREATE TABLE product (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_product_project ON product(project_id);
+CREATE INDEX IF NOT EXISTS idx_product_project ON product(project_id);
 
-CREATE TABLE microservice (
+CREATE TABLE IF NOT EXISTS microservice (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_id  UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
     product_id  UUID REFERENCES product(id) ON DELETE SET NULL,
@@ -46,12 +46,12 @@ CREATE TABLE microservice (
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (project_id, name)
 );
-CREATE INDEX idx_microservice_project ON microservice(project_id);
+CREATE INDEX IF NOT EXISTS idx_microservice_project ON microservice(project_id);
 
 -- =====================================================================
 -- Documento + versionamento append-only
 -- =====================================================================
-CREATE TABLE document (
+CREATE TABLE IF NOT EXISTS document (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_id      UUID REFERENCES project(id) ON DELETE SET NULL,
     microservice_id UUID REFERENCES microservice(id) ON DELETE SET NULL,
@@ -68,13 +68,13 @@ CREATE TABLE document (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_document_project ON document(project_id);
-CREATE INDEX idx_document_slug    ON document(slug);
-CREATE INDEX idx_document_domain  ON document(domain);
-CREATE INDEX idx_document_tags    ON document USING GIN (tags);
+CREATE INDEX IF NOT EXISTS idx_document_project ON document(project_id);
+CREATE INDEX IF NOT EXISTS idx_document_slug    ON document(slug);
+CREATE INDEX IF NOT EXISTS idx_document_domain  ON document(domain);
+CREATE INDEX IF NOT EXISTS idx_document_tags    ON document USING GIN (tags);
 
 -- Histórico imutável: uma linha por versão. Nunca se atualiza; só insere.
-CREATE TABLE document_version (
+CREATE TABLE IF NOT EXISTS document_version (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID NOT NULL REFERENCES document(id) ON DELETE CASCADE,
     version     INT  NOT NULL,
@@ -84,12 +84,12 @@ CREATE TABLE document_version (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (document_id, version)
 );
-CREATE INDEX idx_version_document ON document_version(document_id);
+CREATE INDEX IF NOT EXISTS idx_version_document ON document_version(document_id);
 
 -- =====================================================================
 -- Fila de ingestão (staging) — idempotente por (source_type, external_id)
 -- =====================================================================
-CREATE TABLE staged_document (
+CREATE TABLE IF NOT EXISTS staged_document (
     id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     raw_content          TEXT NOT NULL,
     source_type          TEXT NOT NULL,         -- confluence | github | upload | ...
@@ -110,12 +110,12 @@ CREATE TABLE staged_document (
     updated_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (source_type, external_id)
 );
-CREATE INDEX idx_staged_status ON staged_document(status);
+CREATE INDEX IF NOT EXISTS idx_staged_status ON staged_document(status);
 
 -- =====================================================================
 -- Auditoria formal
 -- =====================================================================
-CREATE TABLE audit_log (
+CREATE TABLE IF NOT EXISTS audit_log (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     entity_type TEXT NOT NULL,                  -- Document | Project | ...
     entity_id   UUID,
@@ -124,13 +124,13 @@ CREATE TABLE audit_log (
     detail      JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_audit_entity ON audit_log(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_log(entity_type, entity_id);
 
 -- =====================================================================
 -- Chunks vetoriais (escrito pelo knowledge-search) — pgvector
 -- Substitui a coleção 'documents' do Qdrant.
 -- =====================================================================
-CREATE TABLE document_chunk (
+CREATE TABLE IF NOT EXISTS document_chunk (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id  UUID NOT NULL REFERENCES document(id) ON DELETE CASCADE,
     chunk_index  INT  NOT NULL,
@@ -146,8 +146,8 @@ CREATE TABLE document_chunk (
 );
 
 -- Índice ANN por cosseno (HNSW). vector_cosine_ops casa com embeddings normalizados.
-CREATE INDEX idx_chunk_embedding_hnsw
+CREATE INDEX IF NOT EXISTS idx_chunk_embedding_hnsw
     ON document_chunk USING hnsw (embedding vector_cosine_ops);
 
-CREATE INDEX idx_chunk_document ON document_chunk(document_id);
-CREATE INDEX idx_chunk_project  ON document_chunk(project_id);
+CREATE INDEX IF NOT EXISTS idx_chunk_document ON document_chunk(document_id);
+CREATE INDEX IF NOT EXISTS idx_chunk_project  ON document_chunk(project_id);

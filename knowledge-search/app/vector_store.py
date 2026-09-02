@@ -86,11 +86,14 @@ def search(
     project_id: str | None = None,
     domain: str | None = None,
     tags: list[str] | None = None,
+    space_id: str | None = None,
 ) -> list[dict]:
     """Busca os chunks mais similares por distância de cosseno (operador <=>).
 
     score = 1 - distância_cosseno  (maior = mais similar), espelhando o Qdrant.
     Filtros opcionais por project_id / domain / tags viram cláusulas WHERE.
+    O filtro por space_id vive na tabela `document` (o chunk não guarda space),
+    então é aplicado via subconsulta sobre document_id.
     """
     # Filtros opcionais → cláusulas WHERE, na ordem em que aparecem no SQL.
     conditions: list[str] = []
@@ -105,6 +108,12 @@ def search(
         # o chunk deve conter TODAS as tags pedidas (operador @>).
         conditions.append("tags @> %s")
         filter_params.append(tags)
+    if space_id:
+        # space vive na tabela `document`; casa o chunk pelo document_id.
+        conditions.append(
+            "document_id IN (SELECT id FROM document WHERE space_id = %s)"
+        )
+        filter_params.append(space_id)
 
     where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
 

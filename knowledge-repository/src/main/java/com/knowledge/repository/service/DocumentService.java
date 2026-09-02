@@ -54,6 +54,7 @@ public class DocumentService {
         d.setSlug(req.slug());
         d.setProjectId(req.projectId());
         d.setMicroserviceId(req.microserviceId());
+        d.setSpaceId(req.spaceId());
         d.setDomain(req.domain());
         d.setCategory(req.category());
         d.setTags(toArray(req.tags()));
@@ -76,6 +77,7 @@ public class DocumentService {
             d.setContent(req.content());
         }
         d.setSlug(req.slug());
+        d.setSpaceId(req.spaceId());
         d.setDomain(req.domain());
         d.setCategory(req.category());
         if (req.tags() != null) {
